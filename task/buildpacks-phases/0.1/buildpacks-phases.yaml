@@ -24,8 +24,6 @@ spec:
   params:
     - name: BUILDER_IMAGE
       description: The image on which builds will run (must include lifecycle and compatible buildpacks).
-    - name: RUN_IMAGE
-      description: The base image for the built app (the app will be added as a layer).
     - name: CACHE
       description: The name of the persistent app cache volume.
       default: empty-dir
@@ -80,6 +78,18 @@ spec:
           mountPath: /cache
       securityContext:
         privileged: true
+
+    - name: copy-stack-toml
+      image: $(params.BUILDER_IMAGE)
+      imagePullPolicy: Always
+      command: ["/bin/sh"]
+      args:
+        - "-c"
+        - >
+          cp /cnb/stack.toml /layers/
+      volumeMounts:
+        - name: layers-dir
+          mountPath: /layers
 
     - name: detect
       image: $(params.BUILDER_IMAGE)
@@ -160,7 +170,7 @@ spec:
         - "-process-type=$(params.PROCESS_TYPE)"
         - "-uid=$(params.USER_ID)"
         - "-gid=$(params.GROUP_ID)"
-        - "-run-image=$(params.RUN_IMAGE)"
+        - "-stack=/layers/stack.toml"
         - "$(resources.outputs.image.url)"
       volumeMounts:
         - name: layers-dir

@@ -21,8 +21,6 @@ spec:
     value: apps/java-maven
   - name: BUILDER_IMAGE
     value: localhost:5000/spy-builder
-  - name: RUN_IMAGE
-    value: cnbs/sample-stack-run:alpine
 # Uncomment the lines below to use an existing cache
 #  - name: CACHE
 #    value: my-cache
